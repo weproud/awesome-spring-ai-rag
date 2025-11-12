@@ -2,9 +2,11 @@ package com.weproud.config
 
 import org.springframework.ai.document.Document
 import org.springframework.ai.vectorstore.VectorStore
+import org.springframework.ai.transformer.splitter.TokenTextSplitter
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -12,10 +14,14 @@ import java.nio.file.Paths
 class VectorStoreConfig {
 
     @Bean
-    fun ragInitializer(vectorStore: VectorStore): ApplicationRunner = ApplicationRunner {
+    fun vectorStoreInitializer(vectorStore: VectorStore): ApplicationRunner = ApplicationRunner {
         val path = Paths.get("src/main/resources/data/ratings.txt")
         if (!Files.exists(path)) return@ApplicationRunner
 
+        val b = FilterExpressionBuilder()
+        vectorStore.delete(b.ne("id", "__never__").build())
+
+        val splitter = TokenTextSplitter()
         Files.newBufferedReader(path).use { reader ->
             var headerSkipped = false
             val batch = mutableListOf<Document>()
@@ -35,14 +41,16 @@ class VectorStoreConfig {
                     batch.add(Document(text, mapOf("id" to id, "label" to label)))
 
                     if (batch.size >= 100) {
-                        vectorStore.add(batch.toList())
+                        val split = splitter.apply(batch.toList())
+                        vectorStore.add(split)
                         batch.clear()
                     }
                 }
             }
 
             if (batch.isNotEmpty()) {
-                vectorStore.add(batch.toList())
+                val split = splitter.apply(batch.toList())
+                vectorStore.add(split)
             }
         }
     }

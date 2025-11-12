@@ -20,11 +20,11 @@ class VectorStoreService(
         return docs.size
     }
 
-    fun search(req: SearchVectorStoreRequest): SearchVectorStoreResponse {
-        val topK = req.topK ?: 5
+    fun search(request: SearchVectorStoreRequest): SearchVectorStoreResponse {
+        val topK = request.topK ?: 5
         val results = vectorStore.similaritySearch(
             SearchRequest.builder()
-                .query(req.query)
+                .query(request.query)
                 .topK(topK)
                 .build()
         )

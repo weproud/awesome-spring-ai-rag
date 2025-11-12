@@ -35,11 +35,22 @@ services:
       - ETCD_AUTO_COMPACTION_RETENTION=1
       - ETCD_QUOTA_BACKEND_BYTES=4294967296
       - ETCD_SNAPSHOT_COUNT=50000
+      - ETCDCTL_API=3
+      - ETCD_DATA_DIR=/etcd
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://milvus-etcd:2379
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://milvus-etcd:2380
+      - ETCD_INITIAL_CLUSTER=default=http://milvus-etcd:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "/usr/local/bin/etcdctl --endpoints=http://localhost:2379 endpoint health | grep -q 'is healthy'",
+          "CMD",
+          "etcdctl",
+          "--endpoints=http://127.0.0.1:2379",
+          "endpoint",
+          "health",
         ]
       interval: 5s
       timeout: 3s
@@ -89,15 +100,11 @@ services:
         condition: service_healthy
     ports:
       - "19530:19530"
-      - "8080:8080"
+      - "9091:9091"
     volumes:
       - ./data/milvus:/var/lib/milvus
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -fs http://localhost:8080 || wget -q --spider http://localhost:8080",
-        ]
+      test: ["CMD", "curl", "-fs", "http://localhost:9091/healthz"]
       interval: 5s
       timeout: 3s
       retries: 10
