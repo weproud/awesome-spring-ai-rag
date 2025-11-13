@@ -1,6 +1,6 @@
 spring:
   application:
-    name: hello-spring-ai-rag
+    name: awesome-spring-ai-rag
   ai:
     vectorstore:
       milvus:

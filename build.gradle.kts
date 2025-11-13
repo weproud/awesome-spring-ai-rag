@@ -31,6 +31,15 @@ dependencies {
     implementation("org.springframework.ai:spring-ai-starter-model-ollama")
     implementation("org.springframework.ai:spring-ai-starter-vector-store-milvus")
     implementation("org.springframework.ai:spring-ai-tika-document-reader")
+    implementation("dev.langchain4j:langchain4j:1.8.0")
+    runtimeOnly("io.netty:netty-resolver-dns-native-macos") {
+        artifact {
+            classifier = when (System.getProperty("os.arch")) {
+                "aarch64", "arm64" -> "osx-aarch_64"
+                else -> "osx-x86_64"
+            }
+        }
+    }
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
