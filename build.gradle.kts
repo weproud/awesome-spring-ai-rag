@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springframework.ai:spring-ai-starter-vector-store-milvus")
     implementation("org.springframework.ai:spring-ai-tika-document-reader")
     implementation("dev.langchain4j:langchain4j:1.8.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
     runtimeOnly("io.netty:netty-resolver-dns-native-macos") {
         artifact {
             classifier = when (System.getProperty("os.arch")) {
@@ -59,4 +60,13 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    jvmArgs(
+        "-Dcom.sun.management.jmxremote=false",
+        "-XX:+DisableAttachMechanism",
+        "-Dcom.sun.management.jmxremote.local.only=true",
+        "-Djava.rmi.server.hostname=127.0.0.1"
+    )
 }

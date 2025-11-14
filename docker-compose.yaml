@@ -1,4 +1,13 @@
 services:
+  attu:
+    container_name: milvus-attu
+    image: zilliz/attu:latest
+    restart: always
+    ports:
+      - "8000:3000"
+    depends_on:
+      milvus:
+        condition: service_healthy
   openWebUI:
     container_name: open-webui
     image: ghcr.io/open-webui/open-webui:latest

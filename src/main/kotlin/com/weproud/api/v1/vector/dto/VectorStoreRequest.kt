@@ -23,3 +23,9 @@ data class CreateVectorStoreRequest(
     val documents: List<@Valid DocumentRequest>
 )
 
+data class IngestVectorStoreRequest(
+    val deleteAll: Boolean? = false,
+    val labels: List<String>? = null,
+    @field:Min(1)
+    val batchSize: Int? = null
+)

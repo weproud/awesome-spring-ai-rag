@@ -1,6 +1,8 @@
 spring:
   application:
     name: awesome-spring-ai-rag
+  jmx:
+    enabled: false
   ai:
     vectorstore:
       milvus:
@@ -12,8 +14,8 @@ spring:
         database-name: ${MILVUS_DATABASE:default}
         collection-name: ${MILVUS_COLLECTION:vector_store}
         initialize-schema: ${MILVUS_INIT_SCHEMA:true}
-        embedding-dimension: ${MILVUS_EMBED_DIM:1536}
-        index-type: ${MILVUS_INDEX_TYPE:HNSW}
+        embedding-dimension: ${MILVUS_EMBED_DIM:768}
+        index-type: ${MILVUS_INDEX_TYPE:FLAT}
         metric-type: ${MILVUS_METRIC_TYPE:COSINE}
 
     ollama:
@@ -21,7 +23,11 @@ spring:
       chat:
         options:
           model: ${OLLAMA_CHAT_MODEL:gemma:2b-instruct}
-          temperature: ${OLLAMA_TEMPERATURE:0.2}
+          temperature: ${OLLAMA_TEMPERATURE:0.0}
       embedding:
         options:
           model: ${OLLAMA_EMBED_MODEL:nomic-embed-text}
+      init:
+        pull-model-strategy: ${OLLAMA_INIT_PULL_MODEL_STRATEGY:always}
+        timeout: ${OLLAMA_INIT_TIMEOUT:5m}
+        max-retries: ${OLLAMA_INIT_MAX_RETRIES:3}
